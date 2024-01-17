@@ -14,11 +14,15 @@ module.exports = {
         if(config.Discord.rulesEnabled) {
             const linkID = pool.createLink(member.id);
             const captchaEmbed = new EmbedBuilder()
-                .setColor('#0099ff')
-                .setTitle('reCAPTCHA Verification')
-                .setDescription(`To gain access to this server you must solve a captcha. The link will expire in 15 minutes.\n${config.server.https ? 'https://' : 'http://'}${domain}/verify/${linkID}`)
+                .setColor('#1a4143')
+                .setDescription("<:ward:1197218187880714290> **Vérification Captcha**\nPour accéder au serveur, vous devez compléter le captcha ci-dessous.\nCe lien expirera dans **15 minutes**.")
 
-            member.send({ embeds: [captchaEmbed] }).catch(() => {
+            const row = new ActionRowBuilder()
+                .addComponents(new ButtonBuilder()
+                .setURL(`${config.server.https ? 'https://' : 'http://'}${domain}/verify/${linkID}`)
+                .setEmoji(1197218187880714290))
+
+            member.send({ embeds: [captchaEmbed], row: [row] }).catch(() => {
                 logger.error(`Failed to send captcha to user! (Maybe they have DMs turned off?)`);
             });    
                 
