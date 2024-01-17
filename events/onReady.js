@@ -10,7 +10,7 @@ module.exports = {
 
 	async execute(client) {
         logger.success('Bot online!');
-        client.user.setPresence({ activities: [{ type: config.Discord.statusType, name: `${config.Discord.statusMsg}` }], status: 'idle' })
+        client.user.setPresence({ activities: [{ type: config.Discord.statusType, name: `${config.Discord.statusMsg}` }], status: 'online' })
         logger.success('Status Set!');
 	},
 };

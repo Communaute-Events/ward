@@ -1,7 +1,7 @@
 require("dotenv").config()
 // —— Requiring the packages the we need.
 const fs = require("fs");
-const { Client, Collection, Partials, GatewayIntentBits } = require("discord.js");
+const { Client, Collection, Partials } = require("discord.js");
 const { Signale } = require('signale');
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
@@ -15,7 +15,7 @@ const logger = new Signale({ scope: 'Discord' });
 
 // —— Initializing the client.
 const client = new Client({ 
-    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ], // Basically for (most?) of the intents.
+    intents: [ 131071 ], // Basically for (most?) of the intents.
     partials: [
         Partials.Channel
     ] 
