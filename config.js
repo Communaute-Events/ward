@@ -17,7 +17,7 @@ module.exports = {
         statusMsg: "utilisateurs non-verifés!",
 
         // —— By default, rules are set to disabled, this means rules will be hidden. If you want to use the rules function, change disabled to your rules. Please ensure you use \n for each line break and do not use any symbols that could interfear with JSON.
-        rulesEnabled: true,
+        rulesEnabled: false,
         rules: "Type your rules here if rulesEnabled is enabled, ensure to use \n for new lines"
     }
 }

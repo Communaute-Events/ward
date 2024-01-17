@@ -22,7 +22,7 @@ module.exports = {
                 .setLabel("Accéder au captcha")
 
             const row = new ActionRowBuilder()
-                .addComponents()
+                .addComponents(button)
 
             member.send({ embeds: [captchaEmbed], row: [row] }).catch(() => {
                 logger.error(`Failed to send captcha to user! (Maybe they have DMs turned off?)`);
@@ -31,11 +31,17 @@ module.exports = {
         } else {
             const linkID = pool.createLink(member.id);
             const captchaEmbed = new EmbedBuilder()
-                .setColor('#0099ff')
-                .setTitle('reCAPTCHA Verification')
-                .setDescription(`To gain access to this server you must solve a captcha. The link will expire in 15 minutes.\n${config.server.https ? 'https://' : 'http://'}${domain}/verify/${linkID}`)
+                .setColor('#1a4143')
+                .setDescription("<:ward:1197218187880714290> **Vérification Captcha**\nPour accéder au serveur, vous devez compléter le captcha ci-dessous.\nCe lien expirera dans **15 minutes**.")
 
-            member.send({ embeds: [captchaEmbed] }).catch(() => {
+            const button = new ButtonBuilder()
+                .setURL(`${config.server.https ? 'https://' : 'http://'}${domain}/verify/${linkID}`)
+                .setLabel("Accéder au captcha")
+
+            const row = new ActionRowBuilder()
+                .addComponents(button)
+
+            member.send({ embeds: [captchaEmbed], row: [row] }).catch(() => {
                 logger.error(`Failed to send captcha to user! (Maybe they have DMs turned off?)`);
             });
         }
