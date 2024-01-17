@@ -41,7 +41,8 @@ module.exports = {
             const row = new ActionRowBuilder()
                 .addComponents(button)
 
-            member.send({ embeds: [captchaEmbed], components: [row] }).catch(() => {
+            member.send({ embeds: [captchaEmbed], components: [row] }).catch((err) => {
+                logger.error(err)
                 logger.error(`Failed to send captcha to user! (Maybe they have DMs turned off?)`);
             });
         }
