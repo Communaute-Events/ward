@@ -7,25 +7,27 @@ const config = require('../config.js');
 const pool = require('../pool.js');
 
 module.exports = {
-	name: "guildMemberAdd",
+    name: "guildMemberAdd",
 
-	async execute(member) {
-        const domain = config.server.domain === 'localhost' ? `${config.server.domain}:${config.server.httpPort}` : `${config.server.domain}`; 
-        if(config.Discord.rulesEnabled) {
+    async execute(member) {
+        const domain = config.server.domain === 'localhost' ? `${config.server.domain}:${config.server.httpPort}` : `${config.server.domain}`;
+        if (config.Discord.rulesEnabled) {
             const linkID = pool.createLink(member.id);
             const captchaEmbed = new EmbedBuilder()
                 .setColor('#1a4143')
                 .setDescription("<:ward:1197218187880714290> **Vérification Captcha**\nPour accéder au serveur, vous devez compléter le captcha ci-dessous.\nCe lien expirera dans **15 minutes**.")
 
-            const row = new ActionRowBuilder()
-                .addComponents(new ButtonBuilder()
+            const button = new ButtonBuilder()
                 .setURL(`${config.server.https ? 'https://' : 'http://'}${domain}/verify/${linkID}`)
-                .setEmoji(1197218187880714290))
+                .setLabel("Accéder au captcha")
+
+            const row = new ActionRowBuilder()
+                .addComponents()
 
             member.send({ embeds: [captchaEmbed], row: [row] }).catch(() => {
                 logger.error(`Failed to send captcha to user! (Maybe they have DMs turned off?)`);
-            });    
-                
+            });
+
         } else {
             const linkID = pool.createLink(member.id);
             const captchaEmbed = new EmbedBuilder()
@@ -35,8 +37,8 @@ module.exports = {
 
             member.send({ embeds: [captchaEmbed] }).catch(() => {
                 logger.error(`Failed to send captcha to user! (Maybe they have DMs turned off?)`);
-            });    
+            });
         }
-        
-	},
+
+    },
 };
