@@ -1,7 +1,7 @@
-import "dotenv/config"
+require("dotenv").config()
 // —— Requiring the packages the we need.
 const fs = require("fs");
-const { Client, Collection, Partials } = require("discord.js");
+const { Client, Collection, Partials, GatewayIntentBits } = require("discord.js");
 const { Signale } = require('signale');
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
@@ -15,7 +15,7 @@ const logger = new Signale({ scope: 'Discord' });
 
 // —— Initializing the client.
 const client = new Client({ 
-    intents: [ 131071 ], // Basically for (most?) of the intents.
+    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ], // Basically for (most?) of the intents.
     partials: [
         Partials.Channel
     ] 
@@ -61,7 +61,7 @@ const commandJsonData = [
 (async () => {
 	try {
 		logger.success("Started refreshing application (/) commands.");
-		await rest.put(Routes.applicationGuildCommands(config.Discord.botId, config.Discord.guildId), { body: commandJsonData });
+		await rest.put(Routes.applicationGuildCommands(process.env.botId, process.env.guildId + ""), { body: commandJsonData });
 		logger.success("Successfully reloaded application (/) commands.");
 	} catch (error) {
 		console.error(error);
@@ -70,7 +70,7 @@ const commandJsonData = [
 
 async function addRole(userID) {
     try {
-		const guild = await client.guilds.fetch(config.Discord.guildId),
+		const guild = await client.guilds.fetch(process.env.guildId),
         	 role = await guild.roles.fetch(config.Discord.verifiedRole),
           	 member = await guild.members.fetch(userID);
 
@@ -93,7 +93,7 @@ async function removeRole(userID) {
 
 	if(removeRole) {
 		try {
-			const guild = await client.guilds.fetch(config.Discord.guildId),
+			const guild = await client.guilds.fetch(process.env.guildId),
 				 removeRoleId = await guild.roles.fetch(config.Discord.removeRoleId),
 				 member = await guild.members.fetch(userID);
 
@@ -135,7 +135,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/verify/:verifyId?', (req, res) => {
     if (!req.params.verifyId) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
     if (!pool.isValidLink(req.params.verifyId)) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
-    res.render(path.join(__dirname, '/html/verify.html'), { publicKey: config.reCAPTCHA.publicKey });
+    res.render(path.join(__dirname, '/html/verify.html'), { publicKey: process.env.publicKey });
 });
 
 // POST /verify/id
@@ -144,7 +144,7 @@ app.post('/verify/:verifyId?', async (req, res) => {
 
     const response = await axios({
         method: 'post',
-        url: `https://www.google.com/recaptcha/api/siteverify?secret=${config.reCAPTCHA.secretKey}&response=${req.body['g-recaptcha-response']}`,
+        url: `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.secretKey}&response=${req.body['g-recaptcha-response']}`,
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
