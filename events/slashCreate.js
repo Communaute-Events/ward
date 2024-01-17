@@ -17,9 +17,13 @@ module.exports = {
 			await command.execute(interaction);
 		} catch (err) {
 			logger.error(err);
-			await interaction.reply({
+			try {
+				await interaction.reply({
 				content: "There was an issue while executing that command!", ephemeral: true,
 			});
+			} catch (err) {
+				console.log(err)
+			}
 		}
 	},
 };
