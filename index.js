@@ -1,4 +1,4 @@
-
+import "dotenv/config"
 // —— Requiring the packages the we need.
 const fs = require("fs");
 const { Client, Collection, Partials } = require("discord.js");
