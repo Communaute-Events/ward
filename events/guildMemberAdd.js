@@ -1,7 +1,7 @@
 
 // —— dot. 
 const { Signale } = require('signale');
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const logger = new Signale({ scope: 'Discord' });
 const config = require('../config.js');
 const pool = require('../pool.js');
@@ -20,6 +20,7 @@ module.exports = {
             const button = new ButtonBuilder()
                 .setURL(`${config.server.https ? 'https://' : 'http://'}${domain}/verify/${linkID}`)
                 .setLabel("Accéder au captcha")
+                .setStyle(ButtonStyle.Link)
 
             const row = new ActionRowBuilder()
                 .addComponents(button)
@@ -37,6 +38,7 @@ module.exports = {
             const button = new ButtonBuilder()
                 .setURL(`${config.server.https ? 'https://' : 'http://'}${domain}/verify/${linkID}`)
                 .setLabel("Accéder au captcha")
+                .setStyle(ButtonStyle.Link)
 
             const row = new ActionRowBuilder()
                 .addComponents(button)
