@@ -14,25 +14,25 @@ const config = require("./config.js");
 const logger = new Signale({ scope: 'Discord' });
 
 // —— Initializing the client.
-const client = new Client({ 
-    intents: [ 131071 ], // Basically for (most?) of the intents.
-    partials: [
-        Partials.Channel
-    ] 
+const client = new Client({
+	intents: [131071], // Basically for (most?) of the intents.
+	partials: [
+		Partials.Channel
+	]
 });
 
 // —— All event files of the event handler.
- const eventFiles = fs
- .readdirSync("./events")
- .filter((file) => file.endsWith(".js"));
+const eventFiles = fs
+	.readdirSync("./events")
+	.filter((file) => file.endsWith(".js"));
 
 for (const file of eventFiles) {
- const event = require(`./events/${file}`);
- if (event.once) {
-     client.once(event.name, (...args) => event.execute(...args, client));
- } else {
-     client.on(event.name, async (...args) => await event.execute(...args, client));
- }
+	const event = require(`./events/${file}`);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args, client));
+	} else {
+		client.on(event.name, async (...args) => await event.execute(...args, client));
+	}
 }
 
 client.slashCommands = new Collection();
@@ -69,33 +69,33 @@ const commandJsonData = [
 })();
 
 async function addRole(userID) {
-    try {
+	try {
 		const guild = await client.guilds.fetch(process.env.guildId),
-        	 role = await guild.roles.fetch(config.Discord.verifiedRole),
-          	 member = await guild.members.fetch(userID);
+			role = await guild.roles.fetch(config.Discord.verifiedRole),
+			member = await guild.members.fetch(userID);
 
-        member.roles.add(role)
+		member.roles.add(role)
 			.catch(() => {
 				logger.error(`Failed to add role to user ${member.user.tag}! (Maybe verified role is above bot role?)`);
 				return;
-        	})
+			})
 			.then(() => {
 				logger.info(`Added verified role to user ${member.user.tag}.`);
 			})
-    } catch (e) {
+	} catch (e) {
 		console.log(e)
-        logger.error(`Failed to add role to user ${userID}!`);
-    }
+		logger.error(`Failed to add role to user ${userID}!`);
+	}
 }
 
 async function removeRole(userID) {
-    const removeRole = config.Discord.removeRole
+	const removeRole = config.Discord.removeRole
 
-	if(removeRole) {
+	if (removeRole) {
 		try {
 			const guild = await client.guilds.fetch(process.env.guildId),
-				 removeRoleId = await guild.roles.fetch(config.Discord.removeRoleId),
-				 member = await guild.members.fetch(userID);
+				removeRoleId = await guild.roles.fetch(config.Discord.removeRoleId),
+				member = await guild.members.fetch(userID);
 
 			member.roles.remove(removeRoleId)
 				.catch(() => {
@@ -105,13 +105,13 @@ async function removeRole(userID) {
 				.then(() => {
 					logger.info(`Removed role from user ${member.user.tag}.`);
 				})
-			
-		} catch(e) {
+
+		} catch (e) {
 			logger.error(`Failed to remove role from user ${userID}!`);
 		}
 	} else {
 		logger.info(`Remove role is set to false, step skipped.`)
-	}  
+	}
 }
 
 // —— Login into your client application with bot's token.
@@ -123,7 +123,7 @@ client.login(process.env.token)
 
 // —— And another thingy.
 const app = express(),
-     port = config.server.https ? 443 : config.server.httpPort;
+	port = config.server.https ? 443 : config.server.httpPort;
 
 // —— Define render engine and assets path
 app.engine('html', require('ejs').renderFile);
@@ -133,29 +133,29 @@ app.use(express.urlencoded({ extended: true }));
 
 // GET /verify/id
 app.get('/verify/:verifyId?', (req, res) => {
-    if (!req.params.verifyId) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
-    if (!pool.isValidLink(req.params.verifyId)) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
-    res.render(path.join(__dirname, '/html/verify.html'), { publicKey: process.env.publicKey });
+	if (!req.params.verifyId) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
+	if (!pool.isValidLink(req.params.verifyId)) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
+	res.render(path.join(__dirname, '/html/verify.html'), { publicKey: process.env.publicKey });
 });
 
 // POST /verify/id
 app.post('/verify/:verifyId?', async (req, res) => {
-    if (!req.body || !req.body['g-recaptcha-response']) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
+	if (!req.body || !req.body['g-recaptcha-response']) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
 
-    const response = await axios({
-        method: 'post',
-        url: `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.secretKey}&response=${req.body['g-recaptcha-response']}`,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    });
+	const response = await axios({
+		method: 'post',
+		url: `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.secretKey}&response=${req.body['g-recaptcha-response']}`,
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		}
+	});
 
-    if (!response.data.success) return res.sendFile(path.join(__dirname, '/html/invalidCaptcha.html'));
-    if (!pool.isValidLink(req.params.verifyId)) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
-    await addRole(pool.getDiscordId(req.params.verifyId));
-    await removeRole(pool.getDiscordId(req.params.verifyId));
-    pool.removeLink(req.params.verifyId);
-    res.sendFile(path.join(__dirname, '/html/valid.html'));
+	if (!response.data.success) return res.sendFile(path.join(__dirname, '/html/invalidCaptcha.html'));
+	if (!pool.isValidLink(req.params.verifyId)) return res.sendFile(path.join(__dirname, '/html/invalidLink.html'));
+	await addRole(pool.getDiscordId(req.params.verifyId));
+	await removeRole(pool.getDiscordId(req.params.verifyId));
+	pool.removeLink(req.params.verifyId);
+	res.sendFile(path.join(__dirname, '/html/valid.html'));
 });
 
 const start = () => {
