@@ -1,6 +1,6 @@
 module.exports = {
     server: {
-        domain: "doofenbrains.up.railway.app↗",
+        domain: "doofenbrains.up.railway.app",
         https: true,
         httpPort: 8080,
     },
